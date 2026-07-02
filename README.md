@@ -39,7 +39,9 @@ Most secret scanners run in CI, *after* the leak is already in your git history.
 Run **Secret Guardian: Upgrade to Pro…** from the Command Palette to open secure
 checkout (payments handled by [Lemon Squeezy](https://www.lemonsqueezy.com/), the
 merchant of record — global tax included). After purchase you'll receive a
-license key by email; activate it with **Secret Guardian: Enter Pro License Key**.
+license key by email. Click the **“Activate in VS Code”** link in the receipt to
+unlock Pro in one click, or paste the key via **Secret Guardian: Enter Pro
+License Key**.
 
 - Your key is stored in VS Code **Secret Storage** (never in `settings.json`).
 - Activation binds the key to your device; manage devices with

@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { scanText } from './core/scanner';
 import { builtInRules } from './core/rules';
 import { Finding, SecretRule } from './core/types';
+import { parseActivationKey } from './core/activationLink';
 import { DiagnosticsManager } from './features/diagnostics';
 import { MaskController } from './features/masking';
 import { StatusBar } from './features/statusBar';
@@ -76,6 +77,7 @@ export function activate(context: vscode.ExtensionContext): void {
   );
 
   registerCommands(context);
+  registerUriHandler(context);
   rescanActive();
 }
 
@@ -206,15 +208,7 @@ function registerCommands(context: vscode.ExtensionContext): void {
 
 // ── License commands ──────────────────────────────────────────────────────────
 
-async function enterLicenseCommand(): Promise<void> {
-  const key = await vscode.window.showInputBox({
-    prompt: 'Enter your Secret Guardian Pro license key',
-    placeHolder: 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX',
-    ignoreFocusOut: true,
-  });
-  if (key == null || key.trim() === '') {
-    return;
-  }
+async function activateKey(key: string): Promise<void> {
   const res = await vscode.window.withProgress(
     { location: vscode.ProgressLocation.Notification, title: 'Secret Guardian: activating license…' },
     () => license.activate(key),
@@ -224,6 +218,38 @@ async function enterLicenseCommand(): Promise<void> {
   } else {
     vscode.window.showWarningMessage(`Secret Guardian: ${res.message}`);
   }
+}
+
+async function enterLicenseCommand(): Promise<void> {
+  const key = await vscode.window.showInputBox({
+    prompt: 'Enter your Secret Guardian Pro license key',
+    placeHolder: 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX',
+    ignoreFocusOut: true,
+  });
+  if (key == null || key.trim() === '') {
+    return;
+  }
+  await activateKey(key.trim());
+}
+
+/**
+ * One-click activation deep link:
+ *   vscode://thund3rbird.secret-guardian/activate?key=<LICENSE_KEY>
+ * Opened from the post-purchase page/email so Pro unlocks without copy-paste.
+ * Harmless in the free build: activation there just shows the upgrade prompt.
+ */
+function registerUriHandler(context: vscode.ExtensionContext): void {
+  context.subscriptions.push(
+    vscode.window.registerUriHandler({
+      handleUri: async (uri: vscode.Uri): Promise<void> => {
+        const key = parseActivationKey(uri.path, uri.query);
+        if (!key) {
+          return;
+        }
+        await activateKey(key);
+      },
+    }),
+  );
 }
 
 interface TierPick extends vscode.QuickPickItem {
