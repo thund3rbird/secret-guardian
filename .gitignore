@@ -1,0 +1,17 @@
+node_modules/
+out/
+*.vsix
+.vscode-test/
+.DS_Store
+
+# Local venture ops files — not part of the published extension
+PLAN.md
+STATUS.md
+launch-kit.md
+metrics-history.csv
+scripts/launch-links.js
+scripts/marketplace-stats.js
+
+# Manual-test fixture with realistic fake tokens — kept local, never committed
+# (trips secret scanners; not needed in the repo or the packaged extension).
+examples/sample-with-secrets.txt

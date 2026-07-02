@@ -1,0 +1,153 @@
+{
+  "name": "secret-guardian",
+  "displayName": "Secret Guardian",
+  "description": "Live in-editor detection and masking of API keys, tokens, and secrets — catch leaks before you commit, paste, or screen-share.",
+  "version": "0.2.0",
+  "publisher": "thund3rbird",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thund3rbird/secret-guardian.git"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Linters",
+    "Other"
+  ],
+  "keywords": [
+    "secrets",
+    "security",
+    "api keys",
+    "tokens",
+    "credential leak",
+    "mask"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/src/extension.js",
+  "icon": "images/icon.png",
+  "contributes": {
+    "commands": [
+      {
+        "command": "secretGuardian.scanActiveFile",
+        "title": "Secret Guardian: Scan Active File"
+      },
+      {
+        "command": "secretGuardian.scanWorkspace",
+        "title": "Secret Guardian: Scan Workspace for Secrets"
+      },
+      {
+        "command": "secretGuardian.toggleMasking",
+        "title": "Secret Guardian: Toggle Secret Masking"
+      },
+      {
+        "command": "secretGuardian.enterLicense",
+        "title": "Secret Guardian: Enter Pro License Key"
+      },
+      {
+        "command": "secretGuardian.exportReport",
+        "title": "Secret Guardian: Export Audit Report (Pro)"
+      },
+      {
+        "command": "secretGuardian.generateCiConfig",
+        "title": "Secret Guardian: Generate CI / Pre-commit Config (Pro)"
+      },
+      {
+        "command": "secretGuardian.upgrade",
+        "title": "Secret Guardian: Upgrade to Pro…"
+      },
+      {
+        "command": "secretGuardian.showLicenseStatus",
+        "title": "Secret Guardian: Show License Status"
+      },
+      {
+        "command": "secretGuardian.deactivateLicense",
+        "title": "Secret Guardian: Deactivate Pro License (this device)"
+      },
+      {
+        "command": "secretGuardian.createCustomRulesTemplate",
+        "title": "Secret Guardian: Create Custom Rules Template (Pro)"
+      }
+    ],
+    "configuration": {
+      "title": "Secret Guardian",
+      "properties": {
+        "secretGuardian.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable live secret scanning."
+        },
+        "secretGuardian.maskSecrets": {
+          "type": "boolean",
+          "default": true,
+          "description": "Visually mask detected secrets in the editor (hides them from screenshots and screen-shares)."
+        },
+        "secretGuardian.scanDelayMs": {
+          "type": "number",
+          "default": 400,
+          "description": "Debounce delay (ms) before re-scanning after edits."
+        },
+        "secretGuardian.disabledRules": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Rule IDs to disable (e.g. \"jwt\", \"generic-high-entropy\")."
+        },
+        "secretGuardian.ignoreGlobs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "**/node_modules/**",
+            "**/*.lock",
+            "**/dist/**",
+            "**/out/**",
+            "**/.git/**"
+          ],
+          "description": "Glob patterns to skip during workspace scans."
+        },
+        "secretGuardian.entropyThreshold": {
+          "type": "number",
+          "default": 3.5,
+          "description": "Minimum Shannon entropy (bits/char) for the generic high-entropy rule."
+        },
+        "secretGuardian.customRulesPath": {
+          "type": "string",
+          "default": "",
+          "description": "(Pro) Path to a JSON file of custom detection rules."
+        },
+        "secretGuardian.licenseKey": {
+          "type": "string",
+          "default": "",
+          "description": "Deprecated: license keys are now stored securely in VS Code Secret Storage. Use the command “Secret Guardian: Enter Pro License Key”. Any value here is migrated to Secret Storage and then cleared.",
+          "deprecationMessage": "License keys are now stored in Secret Storage. Use the “Secret Guardian: Enter Pro License Key” command instead."
+        },
+        "secretGuardian.pro.checkoutBaseUrl": {
+          "type": "string",
+          "default": "",
+          "description": "(Optional) Override the Lemon Squeezy store base URL used by the “Upgrade to Pro” checkout (e.g. https://yourstore.lemonsqueezy.com)."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile",
+    "test": "node --test out/test/scanner.test.js",
+    "vscode:prepublish": "npm run compile",
+    "package": "vsce package --no-dependencies"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/vscode": "^1.85.0",
+    "pngjs": "^7.0.0",
+    "typescript": "^5.4.0"
+  }
+}
